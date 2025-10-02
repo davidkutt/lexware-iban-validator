@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: iban-validator-db
+    environment:
+      POSTGRES_DB: ibanvalidator
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: iban-validator-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ibanvalidator
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    container_name: iban-validator-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+networks:
+  default:
+    driver: bridge
