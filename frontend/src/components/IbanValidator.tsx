@@ -1,65 +1,22 @@
-import React, { useState, useCallback } from 'react';
-import { ibanApi, IbanValidationResponse } from '../services/api';
+import React from 'react';
 import { Card, CardHeader, CardBody, Icon } from './ui';
 import IbanInput from './IbanInput';
 import IbanResult from './IbanResult';
 import IbanExamples from './IbanExamples';
+import { useIbanValidation } from '../hooks';
 
 const IbanValidator: React.FC = () => {
-    const [iban, setIban] = useState('');
-    const [result, setResult] = useState<IbanValidationResponse | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const formatIban = useCallback((value: string) => {
-        const cleaned = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-        return cleaned.replace(/(.{4})/g, '$1 ').trim();
-    }, []);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const formatted = formatIban(e.target.value);
-        setIban(formatted);
-        if (result) setResult(null);
-        if (error) setError(null);
-    };
-
-    const validateIban = async () => {
-        if (!iban.trim()) {
-            setError('Bitte geben Sie eine IBAN ein');
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            const response = await ibanApi.validateIban({ iban });
-            setResult(response);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Validierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
-            setResult(null);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            validateIban();
-        }
-    };
-
-    const clearInput = () => {
-        setIban('');
-        setResult(null);
-        setError(null);
-    };
-
-    const handleSelectExample = (exampleIban: string) => {
-        setIban(exampleIban);
-        setResult(null);
-        setError(null);
-    };
+    const {
+        iban,
+        result,
+        loading,
+        error,
+        handleInputChange,
+        validateIban,
+        clearInput,
+        setIbanValue,
+        handleKeyPress
+    } = useIbanValidation();
 
     return (
         <Card className="animate-slide-up">
@@ -89,7 +46,7 @@ const IbanValidator: React.FC = () => {
                 {result && <IbanResult result={result} />}
 
                 <IbanExamples
-                    onSelectExample={handleSelectExample}
+                    onSelectExample={setIbanValue}
                     disabled={loading}
                 />
             </CardBody>

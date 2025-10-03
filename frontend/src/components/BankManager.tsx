@@ -1,102 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { bankApi, Bank } from '../services/api';
+import React, { useState } from 'react';
+import { Bank } from '../services/api';
 import { Card, CardHeader, CardBody, Button, Alert, Icon } from './ui';
 import BankForm from './BankForm';
 import BankTable from './BankTable';
 import BankStats from './BankStats';
+import { useBankCrud, useFormState } from '../hooks';
 
 const BankManager: React.FC = () => {
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [editingBank, setEditingBank] = useState<Bank | null>(null);
-  const [formData, setFormData] = useState<Bank>({
+
+  const {
+    banks,
+    loading,
+    error,
+    createBank,
+    updateBank,
+    deleteBank,
+    clearError
+  } = useBankCrud();
+
+  const {
+    formData,
+    editingItem: editingBank,
+    handleInputChange,
+    resetForm,
+    startEditing
+  } = useFormState<Bank>({
     name: '',
     bic: '',
     bankCode: '',
     countryCode: ''
   });
 
-  useEffect(() => {
-    fetchBanks();
-  }, []);
-
-  const fetchBanks = async () => {
-    try {
-      setLoading(true);
-      const banksData = await bankApi.getAllBanks();
-      setBanks(banksData);
-    } catch (err: any) {
-      setError('Fehler beim Laden der Banken');
-      console.error('Fehler beim Laden der Banken:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'name' ? value : value.toUpperCase()
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       if (editingBank && editingBank.id) {
-        const updatedBank = await bankApi.updateBank(editingBank.id, formData);
-        setBanks(prev => prev.map(bank =>
-          bank.id === editingBank.id ? updatedBank : bank
-        ));
+        await updateBank(editingBank.id, formData);
       } else {
-        const newBank = await bankApi.createBank(formData);
-        setBanks(prev => [...prev, newBank]);
+        await createBank(formData);
       }
-
       resetForm();
       setShowForm(false);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Fehler beim Speichern der Bank');
+    } catch (err) {
     }
   };
 
   const handleEdit = (bank: Bank) => {
-    setEditingBank(bank);
-    setFormData({
-      name: bank.name,
-      bic: bank.bic,
-      bankCode: bank.bankCode,
-      countryCode: bank.countryCode
-    });
+    startEditing(bank);
     setShowForm(true);
   };
 
   const handleDelete = async (id: number, bankName: string) => {
-    if (!window.confirm(`Möchten Sie "${bankName}" wirklich löschen?`)) {
-      return;
-    }
-
     try {
-      await bankApi.deleteBank(id);
-      setBanks(prev => prev.filter(bank => bank.id !== id));
-    } catch (err: any) {
-      setError('Fehler beim Löschen der Bank');
+      await deleteBank(id, bankName);
+    } catch (err) {
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      bic: '',
-      bankCode: '',
-      countryCode: ''
-    });
-    setEditingBank(null);
-    setError(null);
   };
 
   const cancelEdit = () => {
@@ -147,7 +107,7 @@ const BankManager: React.FC = () => {
 
       <CardBody className="space-y-6">
         {error && (
-          <Alert variant="error" onClose={() => setError(null)}>
+          <Alert variant="error" onClose={clearError}>
             {error}
           </Alert>
         )}
