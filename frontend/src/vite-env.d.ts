@@ -1,7 +1,7 @@
 
 interface ImportMetaEnv {
     readonly VITE_API_URL?: string
-    readonly VITE_API_BASE_URL?: string  // Add this line
+    readonly VITE_API_BASE_URL?: string
     readonly VITE_ENABLE_ERROR_TEST?: string
     readonly DEV: boolean
     readonly PROD: boolean

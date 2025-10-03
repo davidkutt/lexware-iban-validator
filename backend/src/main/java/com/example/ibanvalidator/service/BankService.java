@@ -31,10 +31,6 @@ public class BankService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Bank nach ID abrufen
-     * @throws BankNotFoundException wenn Bank nicht existiert
-     */
     @Transactional(readOnly = true)
     public BankResponse getBankById(Long id) {
         Bank bank = bankRepository.findById(id)
@@ -42,18 +38,12 @@ public class BankService {
         return BankResponse.fromEntity(bank);
     }
 
-    /**
-     * Bank nach BIC suchen
-     */
     @Transactional(readOnly = true)
     public Optional<BankResponse> getBankByBic(String bic) {
         return bankRepository.findByBic(bic)
                 .map(BankResponse::fromEntity);
     }
 
-    /**
-     * Banken nach Land abrufen
-     */
     @Transactional(readOnly = true)
     public List<BankResponse> getBanksByCountry(String countryCode) {
         return bankRepository.findByCountryCode(countryCode)
@@ -62,10 +52,6 @@ public class BankService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Neue Bank erstellen
-     * @throws DuplicateBicException wenn BIC bereits existiert
-     */
     public BankResponse createBank(BankRequest request) {
         if (bankRepository.findByBic(request.getBic()).isPresent()) {
             throw new DuplicateBicException(request.getBic());

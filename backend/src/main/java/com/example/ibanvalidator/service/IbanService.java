@@ -9,10 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-/**
- * Service für IBAN-Validierung mit Apache Commons Validator
- * Unterstützt 70+ Länder mit optimierter MOD-97 Prüfung
- */
 @Service
 public class IbanService {
 
@@ -98,26 +94,25 @@ public class IbanService {
     private String extractBankIdentifier(String iban, String countryCode) {
         try {
             switch (countryCode) {
-                case "DE": // Deutschland: 8 Stellen BLZ
+                case "DE":
                     return iban.substring(4, 12);
-                case "AT": // Österreich: 5 Stellen
+                case "AT":
                     return iban.substring(4, 9);
-                case "CH": // Schweiz: 5 Stellen
+                case "CH":
                     return iban.substring(4, 9);
-                case "GB": // UK: 4 Stellen Sort Code + 6 Stellen Bank
+                case "GB":
                     return iban.substring(4, 10);
-                case "FR": // Frankreich: 5 Stellen
+                case "FR":
                     return iban.substring(4, 9);
-                case "NL": // Niederlande: 4 Stellen
+                case "NL":
                     return iban.substring(4, 8);
-                case "BE": // Belgien: 3 Stellen
+                case "BE":
                     return iban.substring(4, 7);
-                case "ES": // Spanien: 8 Stellen
+                case "ES":
                     return iban.substring(4, 12);
-                case "IT": // Italien: 5 Stellen ABI + 5 Stellen CAB
+                case "IT":
                     return iban.substring(5, 10);
                 default:
-                    // Fallback: Erste 4-8 Zeichen nach Prüfziffer
                     return iban.length() > 8 ? iban.substring(4, 8) : "";
             }
         } catch (StringIndexOutOfBoundsException e) {

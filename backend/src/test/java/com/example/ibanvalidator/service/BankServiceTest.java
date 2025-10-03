@@ -155,7 +155,6 @@ class BankServiceTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingWithDuplicateBic() {
-
         Bank anotherBank = createBank(2L, "Another Bank", "OTHERBICXXX", "10000000", "DE");
 
         BankRequest updateRequest = new BankRequest(

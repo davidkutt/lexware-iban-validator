@@ -26,10 +26,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Controller Integration Tests für IbanController
- * Verwendet @WebMvcTest für schnelle, fokussierte Controller-Tests
- */
 @WebMvcTest(IbanController.class)
 class IbanControllerTest {
 
@@ -47,7 +43,6 @@ class IbanControllerTest {
 
     @Test
     void shouldValidateIban() throws Exception {
-        // Given
         IbanValidationRequest request = new IbanValidationRequest("DE89370400440532013000");
 
         IbanValidationResponse response = new IbanValidationResponse();
@@ -60,7 +55,6 @@ class IbanControllerTest {
 
         when(ibanService.validateIban(any(IbanValidationRequest.class))).thenReturn(response);
 
-        // When & Then
         mockMvc.perform(post("/api/v1/iban/validate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -76,10 +70,8 @@ class IbanControllerTest {
 
     @Test
     void shouldReturnBadRequestForInvalidIban() throws Exception {
-        // Given - IBAN leer
         IbanValidationRequest request = new IbanValidationRequest("");
 
-        // When & Then
         mockMvc.perform(post("/api/v1/iban/validate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -89,7 +81,6 @@ class IbanControllerTest {
 
     @Test
     void shouldGetAllBanks() throws Exception {
-        // Given
         List<BankResponse> banks = Arrays.asList(
                 new BankResponse(1L, "Deutsche Bank", "DEUTDEFFXXX", "10070000", "DE"),
                 new BankResponse(2L, "Commerzbank", "COBADEFFXXX", "10040000", "DE")
@@ -97,7 +88,6 @@ class IbanControllerTest {
 
         when(bankService.getAllBanks()).thenReturn(banks);
 
-        // When & Then
         mockMvc.perform(get("/api/v1/banks"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -109,11 +99,9 @@ class IbanControllerTest {
 
     @Test
     void shouldGetBankById() throws Exception {
-        // Given
         BankResponse bank = new BankResponse(1L, "Deutsche Bank", "DEUTDEFFXXX", "10070000", "DE");
         when(bankService.getBankById(1L)).thenReturn(bank);
 
-        // When & Then
         mockMvc.perform(get("/api/v1/banks/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -125,10 +113,8 @@ class IbanControllerTest {
 
     @Test
     void shouldReturn404WhenBankNotFound() throws Exception {
-        // Given
         when(bankService.getBankById(999L)).thenThrow(new BankNotFoundException(999L));
 
-        // When & Then
         mockMvc.perform(get("/api/v1/banks/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
@@ -139,13 +125,11 @@ class IbanControllerTest {
 
     @Test
     void shouldCreateBank() throws Exception {
-        // Given
         BankRequest request = new BankRequest("Test Bank", "TESTDE12XXX", "12345678", "DE");
         BankResponse response = new BankResponse(1L, "Test Bank", "TESTDE12XXX", "12345678", "DE");
 
         when(bankService.createBank(any(BankRequest.class))).thenReturn(response);
 
-        // When & Then
         mockMvc.perform(post("/api/v1/banks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -160,13 +144,11 @@ class IbanControllerTest {
 
     @Test
     void shouldReturn409WhenCreatingBankWithDuplicateBic() throws Exception {
-        // Given
         BankRequest request = new BankRequest("Test Bank", "DEUTDEFFXXX", "12345678", "DE");
 
         when(bankService.createBank(any(BankRequest.class)))
                 .thenThrow(new DuplicateBicException("DEUTDEFFXXX"));
 
-        // When & Then
         mockMvc.perform(post("/api/v1/banks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -179,10 +161,8 @@ class IbanControllerTest {
 
     @Test
     void shouldValidateRequiredFieldsWhenCreatingBank() throws Exception {
-        // Given - Request mit fehlenden Pflichtfeldern
         BankRequest request = new BankRequest("", "", "", "");
 
-        // When & Then
         mockMvc.perform(post("/api/v1/banks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -194,13 +174,11 @@ class IbanControllerTest {
 
     @Test
     void shouldUpdateBank() throws Exception {
-        // Given
         BankRequest request = new BankRequest("Updated Bank", "TESTDE12XXX", "12345678", "DE");
         BankResponse response = new BankResponse(1L, "Updated Bank", "TESTDE12XXX", "12345678", "DE");
 
         when(bankService.updateBank(eq(1L), any(BankRequest.class))).thenReturn(response);
 
-        // When & Then
         mockMvc.perform(put("/api/v1/banks/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -212,10 +190,8 @@ class IbanControllerTest {
 
     @Test
     void shouldDeleteBank() throws Exception {
-        // Given
         doNothing().when(bankService).deleteBank(1L);
 
-        // When & Then
         mockMvc.perform(delete("/api/v1/banks/1"))
                 .andExpect(status().isNoContent());
 
@@ -224,14 +200,12 @@ class IbanControllerTest {
 
     @Test
     void shouldGetBanksByCountryCode() throws Exception {
-        // Given
         List<BankResponse> banks = Arrays.asList(
                 new BankResponse(1L, "Deutsche Bank", "DEUTDEFFXXX", "10070000", "DE")
         );
 
         when(bankService.getBanksByCountry("DE")).thenReturn(banks);
 
-        // When & Then
         mockMvc.perform(get("/api/v1/banks/country/DE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -242,7 +216,6 @@ class IbanControllerTest {
 
     @Test
     void shouldSearchBanksByName() throws Exception {
-        // Given
         List<BankResponse> banks = Arrays.asList(
                 new BankResponse(1L, "Deutsche Bank", "DEUTDEFFXXX", "10070000", "DE"),
                 new BankResponse(2L, "Deutsche Postbank", "PBNKDEFFXXX", "10010010", "DE")
@@ -250,7 +223,6 @@ class IbanControllerTest {
 
         when(bankService.searchBanksByName("Deutsche")).thenReturn(banks);
 
-        // When & Then
         mockMvc.perform(get("/api/v1/banks/search")
                         .param("name", "Deutsche"))
                 .andExpect(status().isOk())

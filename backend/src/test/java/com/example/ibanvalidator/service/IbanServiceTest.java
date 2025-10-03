@@ -35,17 +35,14 @@ class IbanServiceTest {
 
     @Test
     void shouldValidateCorrectGermanIban() {
-        
         String validIban = "DE89370400440532013000";
         IbanValidationRequest request = new IbanValidationRequest(validIban);
 
         when(bankRepository.findByBankCodeAndCountryCode("37040044", "DE"))
                 .thenReturn(Optional.of(testBank));
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isTrue();
         assertThat(response.getIban()).isEqualTo("DE89370400440532013000");
         assertThat(response.getCountryCode()).isEqualTo("DE");
@@ -60,34 +57,28 @@ class IbanServiceTest {
 
     @Test
     void shouldValidateIbanWithSpaces() {
-        
         String ibanWithSpaces = "DE89 3704 0044 0532 0130 00";
         IbanValidationRequest request = new IbanValidationRequest(ibanWithSpaces);
 
         when(bankRepository.findByBankCodeAndCountryCode("37040044", "DE"))
                 .thenReturn(Optional.of(testBank));
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isTrue();
         assertThat(response.getIban()).isEqualTo("DE89370400440532013000");
     }
 
     @Test
     void shouldValidateIbanWithDashes() {
-        
         String ibanWithDashes = "DE89-3704-0044-0532-0130-00";
         IbanValidationRequest request = new IbanValidationRequest(ibanWithDashes);
 
         when(bankRepository.findByBankCodeAndCountryCode("37040044", "DE"))
                 .thenReturn(Optional.of(testBank));
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isTrue();
     }
 
@@ -96,10 +87,8 @@ class IbanServiceTest {
         String invalidIban = "DE00370400440532013000";
         IbanValidationRequest request = new IbanValidationRequest(invalidIban);
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isFalse();
         assertThat(response.getErrorMessage()).contains("Ungültige");
 
@@ -108,42 +97,33 @@ class IbanServiceTest {
 
     @Test
     void shouldRejectTooShortIban() {
-        
         String shortIban = "DE89370";
         IbanValidationRequest request = new IbanValidationRequest(shortIban);
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isFalse();
         assertThat(response.getErrorMessage()).containsAnyOf("zu kurz", "Mindestens");
     }
 
     @Test
     void shouldRejectTooLongIban() {
-        
         String longIban = "DE89370400440532013000123456789012345";
         IbanValidationRequest request = new IbanValidationRequest(longIban);
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isFalse();
         assertThat(response.getErrorMessage()).containsAnyOf("zu lang", "Maximal");
     }
 
     @Test
     void shouldRejectIbanWithInvalidCharacters() {
-        
         String invalidIban = "DE89@370400440532013000";
         IbanValidationRequest request = new IbanValidationRequest(invalidIban);
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isFalse();
         assertThat(response.getErrorMessage()).contains("ungültige Zeichen");
     }
@@ -153,17 +133,14 @@ class IbanServiceTest {
         String invalidIban = "XX89370400440532013000";
         IbanValidationRequest request = new IbanValidationRequest(invalidIban);
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isFalse();
         assertThat(response.getErrorMessage()).contains("Nicht unterstützter Ländercode");
     }
 
     @Test
     void shouldValidateCorrectGBIban() {
-        
         String validGbIban = "GB29NWBK60161331926819";
         IbanValidationRequest request = new IbanValidationRequest(validGbIban);
 
@@ -171,10 +148,8 @@ class IbanServiceTest {
         when(bankRepository.findByBankCodeAndCountryCode("601613", "GB"))
                 .thenReturn(Optional.of(ukBank));
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isTrue();
         assertThat(response.getCountryCode()).isEqualTo("GB");
         assertThat(response.getCheckDigits()).isEqualTo("29");
@@ -182,43 +157,34 @@ class IbanServiceTest {
 
     @Test
     void shouldHandleNullIban() {
-        
         IbanValidationRequest request = new IbanValidationRequest(null);
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isFalse();
         assertThat(response.getErrorMessage()).contains("erforderlich");
     }
 
     @Test
     void shouldHandleEmptyIban() {
-        
         IbanValidationRequest request = new IbanValidationRequest("");
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isFalse();
         assertThat(response.getErrorMessage()).contains("erforderlich");
     }
 
     @Test
     void shouldValidateIbanWithoutBankInDatabase() {
-        
         String validIban = "DE89370400440532013000";
         IbanValidationRequest request = new IbanValidationRequest(validIban);
 
         when(bankRepository.findByBankCodeAndCountryCode("37040044", "DE"))
                 .thenReturn(Optional.empty());
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isTrue();
         assertThat(response.getBank()).isNull();
         assertThat(response.getBankCode()).isEqualTo("37040044");
@@ -226,17 +192,14 @@ class IbanServiceTest {
 
     @Test
     void shouldConvertLowercaseIbanToUppercase() {
-        
         String lowercaseIban = "de89370400440532013000";
         IbanValidationRequest request = new IbanValidationRequest(lowercaseIban);
 
         when(bankRepository.findByBankCodeAndCountryCode("37040044", "DE"))
                 .thenReturn(Optional.of(testBank));
 
-        
         IbanValidationResponse response = ibanService.validateIban(request);
 
-        
         assertThat(response.isValid()).isTrue();
         assertThat(response.getIban()).isEqualTo("DE89370400440532013000");
         assertThat(response.getCountryCode()).isEqualTo("DE");

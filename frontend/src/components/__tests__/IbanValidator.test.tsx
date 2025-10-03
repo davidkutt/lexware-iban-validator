@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import IbanValidator from '../IbanValidator';
 import * as api from '../../services/api';
 
-// Mock API
 vi.mock('../../services/api');
 
 describe('IbanValidator Component', () => {
