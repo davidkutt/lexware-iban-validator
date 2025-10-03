@@ -1,3 +1,5 @@
+import { CACHE_TTL, RETRY, RETRYABLE_STATUSES } from './constants';
+
 interface CacheEntry<T> {
     data: T;
     timestamp: number;
@@ -18,13 +20,13 @@ interface CacheConfig {
 export class BaseRepository {
     private cache: Map<string, CacheEntry<any>> = new Map();
     protected defaultCacheConfig: CacheConfig = {
-        ttl: 5 * 60 * 1000,
+        ttl: CACHE_TTL.DEFAULT,
         enabled: true
     };
     protected defaultRetryConfig: RetryConfig = {
-        maxRetries: 3,
-        retryDelay: 1000,
-        retryableStatuses: [408, 429, 500, 502, 503, 504]
+        maxRetries: RETRY.MAX_RETRIES_DEFAULT,
+        retryDelay: RETRY.DELAY_DEFAULT,
+        retryableStatuses: [...RETRYABLE_STATUSES]
     };
 
     protected async withCache<T>(

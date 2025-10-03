@@ -1,17 +1,18 @@
 import { BaseRepository } from './BaseRepository';
 import { ibanApi, IbanValidationRequest, IbanValidationResponse } from '../services/api';
+import { CACHE_TTL, RETRY, RETRYABLE_STATUSES, CACHE_KEYS } from './constants';
 
 class IbanRepositoryClass extends BaseRepository {
     constructor() {
         super();
         this.defaultCacheConfig = {
-            ttl: 10 * 60 * 1000,
+            ttl: CACHE_TTL.LONG,
             enabled: true
         };
         this.defaultRetryConfig = {
-            maxRetries: 2,
-            retryDelay: 500,
-            retryableStatuses: [408, 429, 500, 502, 503, 504]
+            maxRetries: RETRY.MAX_RETRIES_LOW,
+            retryDelay: RETRY.DELAY_FAST,
+            retryableStatuses: [...RETRYABLE_STATUSES]
         };
     }
 
@@ -21,8 +22,8 @@ class IbanRepositoryClass extends BaseRepository {
         return this.withCacheAndRetry(
             cacheKey,
             () => ibanApi.validateIban(request),
-            { ttl: 10 * 60 * 1000 },
-            { maxRetries: 2, retryDelay: 500 }
+            { ttl: CACHE_TTL.LONG },
+            { maxRetries: RETRY.MAX_RETRIES_LOW, retryDelay: RETRY.DELAY_FAST }
         );
     }
 
@@ -31,7 +32,7 @@ class IbanRepositoryClass extends BaseRepository {
             const cacheKey = this.getCacheKey('iban', 'validate', iban.replace(/\s/g, ''));
             this.invalidateCache(`^${cacheKey}$`);
         } else {
-            this.invalidateCache('iban:validate:.*');
+            this.invalidateCache(CACHE_KEYS.IBAN_PATTERN);
         }
     }
 }

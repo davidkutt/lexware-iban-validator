@@ -1,4 +1,5 @@
 import React from 'react';
+import { TECH_STACK } from '../repositories/constants';
 
 interface TechBadgeProps {
     name: string;
@@ -45,11 +46,9 @@ const AppFooter: React.FC = () => {
                             Entwickelt mit
                         </h3>
                         <div className="flex flex-wrap gap-2">
-                            <TechBadge name="Spring Boot" color="green" link="https://spring.io/"/>
-                            <TechBadge name="React" color="blue" link="https://reactjs.org/"/>
-                            <TechBadge name="TypeScript" color="blue" link="https://www.typescriptlang.org/"/>
-                            <TechBadge name="Tailwind" color="cyan" link="https://tailwindcss.com/"/>
-                            <TechBadge name="PostgreSQL" color="indigo" link="https://www.postgresql.org/"/>
+                            {TECH_STACK.map((tech) => (
+                                <TechBadge key={tech.name} {...tech} />
+                            ))}
                         </div>
                     </div>
                 </div>

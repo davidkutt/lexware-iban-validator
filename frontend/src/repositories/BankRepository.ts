@@ -1,17 +1,18 @@
 import { BaseRepository } from './BaseRepository';
 import { bankApi, Bank } from '../services/api';
+import { CACHE_TTL, RETRY, RETRYABLE_STATUSES, CACHE_KEYS } from './constants';
 
 class BankRepositoryClass extends BaseRepository {
     constructor() {
         super();
         this.defaultCacheConfig = {
-            ttl: 5 * 60 * 1000,
+            ttl: CACHE_TTL.DEFAULT,
             enabled: true
         };
         this.defaultRetryConfig = {
-            maxRetries: 3,
-            retryDelay: 1000,
-            retryableStatuses: [408, 429, 500, 502, 503, 504]
+            maxRetries: RETRY.MAX_RETRIES_DEFAULT,
+            retryDelay: RETRY.DELAY_DEFAULT,
+            retryableStatuses: [...RETRYABLE_STATUSES]
         };
     }
 
@@ -21,8 +22,8 @@ class BankRepositoryClass extends BaseRepository {
         return this.withCacheAndRetry(
             cacheKey,
             () => bankApi.getAllBanks(),
-            { ttl: 5 * 60 * 1000 },
-            { maxRetries: 3 }
+            { ttl: CACHE_TTL.DEFAULT },
+            { maxRetries: RETRY.MAX_RETRIES_DEFAULT }
         );
     }
 
@@ -32,18 +33,18 @@ class BankRepositoryClass extends BaseRepository {
         return this.withCacheAndRetry(
             cacheKey,
             () => bankApi.getBankById(id),
-            { ttl: 10 * 60 * 1000 },
-            { maxRetries: 2 }
+            { ttl: CACHE_TTL.LONG },
+            { maxRetries: RETRY.MAX_RETRIES_LOW }
         );
     }
 
     async createBank(bank: Bank): Promise<Bank> {
         const result = await this.withRetry(
             () => bankApi.createBank(bank),
-            { maxRetries: 2, retryDelay: 500 }
+            { maxRetries: RETRY.MAX_RETRIES_LOW, retryDelay: RETRY.DELAY_FAST }
         );
 
-        this.invalidateCache('banks:all');
+        this.invalidateCache(CACHE_KEYS.BANKS_ALL);
 
         return result;
     }
@@ -51,11 +52,11 @@ class BankRepositoryClass extends BaseRepository {
     async updateBank(id: number, bank: Bank): Promise<Bank> {
         const result = await this.withRetry(
             () => bankApi.updateBank(id, bank),
-            { maxRetries: 2, retryDelay: 500 }
+            { maxRetries: RETRY.MAX_RETRIES_LOW, retryDelay: RETRY.DELAY_FAST }
         );
 
-        this.invalidateCache('banks:all');
-        this.invalidateCache(`banks:id:${id}`);
+        this.invalidateCache(CACHE_KEYS.BANKS_ALL);
+        this.invalidateCache(`${CACHE_KEYS.BANKS_ID_PREFIX}${id}`);
 
         return result;
     }
@@ -63,11 +64,11 @@ class BankRepositoryClass extends BaseRepository {
     async deleteBank(id: number): Promise<void> {
         await this.withRetry(
             () => bankApi.deleteBank(id),
-            { maxRetries: 2, retryDelay: 500 }
+            { maxRetries: RETRY.MAX_RETRIES_LOW, retryDelay: RETRY.DELAY_FAST }
         );
 
-        this.invalidateCache('banks:all');
-        this.invalidateCache(`banks:id:${id}`);
+        this.invalidateCache(CACHE_KEYS.BANKS_ALL);
+        this.invalidateCache(`${CACHE_KEYS.BANKS_ID_PREFIX}${id}`);
     }
 
     async searchBanksByName(name: string): Promise<Bank[]> {
@@ -76,8 +77,8 @@ class BankRepositoryClass extends BaseRepository {
         return this.withCacheAndRetry(
             cacheKey,
             () => bankApi.searchBanksByName(name),
-            { ttl: 3 * 60 * 1000 },
-            { maxRetries: 2 }
+            { ttl: CACHE_TTL.SHORT },
+            { maxRetries: RETRY.MAX_RETRIES_LOW }
         );
     }
 
@@ -87,17 +88,17 @@ class BankRepositoryClass extends BaseRepository {
         return this.withCacheAndRetry(
             cacheKey,
             () => bankApi.getBanksByCountry(countryCode),
-            { ttl: 5 * 60 * 1000 },
-            { maxRetries: 2 }
+            { ttl: CACHE_TTL.DEFAULT },
+            { maxRetries: RETRY.MAX_RETRIES_LOW }
         );
     }
 
     clearAllCache(): void {
-        this.invalidateCache('banks:.*');
+        this.invalidateCache(CACHE_KEYS.BANKS_PATTERN);
     }
 
     clearBankCache(id: number): void {
-        this.invalidateCache(`banks:id:${id}`);
+        this.invalidateCache(`${CACHE_KEYS.BANKS_ID_PREFIX}${id}`);
     }
 }
 
