@@ -10,13 +10,23 @@ const App: React.FC = () => {
         throw new Error('Test Error: ErrorBoundary funktioniert!');
     }
 
+    const handleLogoClick = () => {
+        setActiveTab('validator');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleTabChange = (tab: 'validator' | 'banks') => {
+        setActiveTab(tab);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <nav
                 className="bg-white shadow-xl border-b border-gray-200 sticky top-0 z-50 backdrop-blur-lg bg-opacity-95">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 cursor-pointer" onClick={handleLogoClick}>
                             <div className="relative">
                                 <div
                                     className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
@@ -35,7 +45,7 @@ const App: React.FC = () => {
 
                         <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
                             <button
-                                onClick={() => setActiveTab('validator')}
+                                onClick={() => handleTabChange('validator')}
                                 className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${
                                     activeTab === 'validator'
                                         ? 'bg-white text-primary-700 shadow-md'
@@ -46,7 +56,7 @@ const App: React.FC = () => {
                                 <span className="hidden sm:inline">Validator</span>
                             </button>
                             <button
-                                onClick={() => setActiveTab('banks')}
+                                onClick={() => handleTabChange('banks')}
                                 className={`px-4 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2 ${
                                     activeTab === 'banks'
                                         ? 'bg-white text-success-700 shadow-md'
