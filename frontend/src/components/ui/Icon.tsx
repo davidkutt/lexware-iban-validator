@@ -84,11 +84,12 @@ const Icon: React.FC<IconProps> = ({ name, className = '', size = 20 }) => {
 
   return (
     <svg
-      className={`${spinClass} ${className}`}
+      className={`inline-block ${spinClass} ${className}`}
       fill="currentColor"
-      viewBox="0 0 24 24"
+      viewBox="0 0 20 20"
       width={size}
       height={size}
+      style={{ verticalAlign: 'middle' }}
     >
       {icons[name]}
     </svg>
