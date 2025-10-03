@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { ibanApi, IbanValidationResponse } from '../services/api';
+import { IbanValidationResponse } from '../services/api';
+import { IbanRepository } from '../repositories/IbanRepository';
 
 export const useIbanValidation = () => {
     const [iban, setIban] = useState('');
@@ -29,7 +30,7 @@ export const useIbanValidation = () => {
         setError(null);
 
         try {
-            const response = await ibanApi.validateIban({ iban });
+            const response = await IbanRepository.validateIban({ iban });
             setResult(response);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Validierung fehlgeschlagen. Bitte versuchen Sie es erneut.');

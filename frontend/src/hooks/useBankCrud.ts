@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { bankApi, Bank } from '../services/api';
+import { Bank } from '../services/api';
+import { BankRepository } from '../repositories/BankRepository';
 
 export const useBankCrud = () => {
     const [banks, setBanks] = useState<Bank[]>([]);
@@ -9,7 +10,7 @@ export const useBankCrud = () => {
     const fetchBanks = useCallback(async () => {
         try {
             setLoading(true);
-            const banksData = await bankApi.getAllBanks();
+            const banksData = await BankRepository.getAllBanks();
             setBanks(banksData);
             setError(null);
         } catch (err: any) {
@@ -26,7 +27,7 @@ export const useBankCrud = () => {
 
     const createBank = useCallback(async (bankData: Bank) => {
         try {
-            const newBank = await bankApi.createBank(bankData);
+            const newBank = await BankRepository.createBank(bankData);
             setBanks(prev => [...prev, newBank]);
             setError(null);
             return newBank;
@@ -39,7 +40,7 @@ export const useBankCrud = () => {
 
     const updateBank = useCallback(async (id: number, bankData: Bank) => {
         try {
-            const updatedBank = await bankApi.updateBank(id, bankData);
+            const updatedBank = await BankRepository.updateBank(id, bankData);
             setBanks(prev => prev.map(bank => bank.id === id ? updatedBank : bank));
             setError(null);
             return updatedBank;
@@ -56,7 +57,7 @@ export const useBankCrud = () => {
         }
 
         try {
-            await bankApi.deleteBank(id);
+            await BankRepository.deleteBank(id);
             setBanks(prev => prev.filter(bank => bank.id !== id));
             setError(null);
             return true;

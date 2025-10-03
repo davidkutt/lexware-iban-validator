@@ -63,4 +63,14 @@ export const bankApi = {
   deleteBank: async (id: number): Promise<void> => {
     await api.delete(`/banks/${id}`);
   },
+
+  searchBanksByName: async (name: string): Promise<Bank[]> => {
+    const response = await api.get(`/banks/search?name=${encodeURIComponent(name)}`);
+    return response.data;
+  },
+
+  getBanksByCountry: async (countryCode: string): Promise<Bank[]> => {
+    const response = await api.get(`/banks/country/${countryCode}`);
+    return response.data;
+  },
 };
