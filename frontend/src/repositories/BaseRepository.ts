@@ -19,15 +19,25 @@ interface CacheConfig {
 
 export class BaseRepository {
     private cache: Map<string, CacheEntry<any>> = new Map();
-    protected defaultCacheConfig: CacheConfig = {
-        ttl: CACHE_TTL.DEFAULT,
-        enabled: true
-    };
-    protected defaultRetryConfig: RetryConfig = {
-        maxRetries: RETRY.MAX_RETRIES_DEFAULT,
-        retryDelay: RETRY.DELAY_DEFAULT,
-        retryableStatuses: [...RETRYABLE_STATUSES]
-    };
+    protected defaultCacheConfig: CacheConfig;
+    protected defaultRetryConfig: RetryConfig;
+
+    constructor(
+        cacheConfig: Partial<CacheConfig> = {},
+        retryConfig: Partial<RetryConfig> = {}
+    ) {
+        this.defaultCacheConfig = {
+            ttl: CACHE_TTL.DEFAULT,
+            enabled: true,
+            ...cacheConfig
+        };
+        this.defaultRetryConfig = {
+            maxRetries: RETRY.MAX_RETRIES_DEFAULT,
+            retryDelay: RETRY.DELAY_DEFAULT,
+            retryableStatuses: [...RETRYABLE_STATUSES],
+            ...retryConfig
+        };
+    }
 
     protected async withCache<T>(
         key: string,

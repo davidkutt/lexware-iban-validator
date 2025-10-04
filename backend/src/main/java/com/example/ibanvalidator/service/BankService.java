@@ -23,12 +23,15 @@ public class BankService {
         this.bankRepository = bankRepository;
     }
 
-    @Transactional(readOnly = true)
-    public List<BankResponse> getAllBanks() {
-        return bankRepository.findAll()
-                .stream()
+    private List<BankResponse> mapToBankResponses(List<Bank> banks) {
+        return banks.stream()
                 .map(BankResponse::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BankResponse> getAllBanks() {
+        return mapToBankResponses(bankRepository.findAll());
     }
 
     @Transactional(readOnly = true)
@@ -46,10 +49,7 @@ public class BankService {
 
     @Transactional(readOnly = true)
     public List<BankResponse> getBanksByCountry(String countryCode) {
-        return bankRepository.findByCountryCode(countryCode)
-                .stream()
-                .map(BankResponse::fromEntity)
-                .collect(Collectors.toList());
+        return mapToBankResponses(bankRepository.findByCountryCode(countryCode));
     }
 
     public BankResponse createBank(BankRequest request) {
@@ -100,9 +100,6 @@ public class BankService {
 
     @Transactional(readOnly = true)
     public List<BankResponse> searchBanksByName(String name) {
-        return bankRepository.findByNameContaining(name)
-                .stream()
-                .map(BankResponse::fromEntity)
-                .collect(Collectors.toList());
+        return mapToBankResponses(bankRepository.findByNameContaining(name));
     }
 }

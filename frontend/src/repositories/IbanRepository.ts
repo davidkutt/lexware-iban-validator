@@ -4,16 +4,10 @@ import { CACHE_TTL, RETRY, RETRYABLE_STATUSES, CACHE_KEYS } from './constants';
 
 class IbanRepositoryClass extends BaseRepository {
     constructor() {
-        super();
-        this.defaultCacheConfig = {
-            ttl: CACHE_TTL.LONG,
-            enabled: true
-        };
-        this.defaultRetryConfig = {
-            maxRetries: RETRY.MAX_RETRIES_LOW,
-            retryDelay: RETRY.DELAY_FAST,
-            retryableStatuses: [...RETRYABLE_STATUSES]
-        };
+        super(
+            { ttl: CACHE_TTL.LONG },
+            { maxRetries: RETRY.MAX_RETRIES_LOW, retryDelay: RETRY.DELAY_FAST }
+        );
     }
 
     async validateIban(request: IbanValidationRequest): Promise<IbanValidationResponse> {

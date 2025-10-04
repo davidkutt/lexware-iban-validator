@@ -5,15 +5,6 @@ import { CACHE_TTL, RETRY, RETRYABLE_STATUSES, CACHE_KEYS } from './constants';
 class BankRepositoryClass extends BaseRepository {
     constructor() {
         super();
-        this.defaultCacheConfig = {
-            ttl: CACHE_TTL.DEFAULT,
-            enabled: true
-        };
-        this.defaultRetryConfig = {
-            maxRetries: RETRY.MAX_RETRIES_DEFAULT,
-            retryDelay: RETRY.DELAY_DEFAULT,
-            retryableStatuses: [...RETRYABLE_STATUSES]
-        };
     }
 
     async getAllBanks(): Promise<Bank[]> {

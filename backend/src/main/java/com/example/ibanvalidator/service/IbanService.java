@@ -1,5 +1,7 @@
 package com.example.ibanvalidator.service;
 
+import com.example.ibanvalidator.config.IbanCountryConfig;
+import com.example.ibanvalidator.config.IbanCountryConfig.CountryFormat;
 import com.example.ibanvalidator.constants.IbanConstants;
 import com.example.ibanvalidator.dto.IbanValidationRequest;
 import com.example.ibanvalidator.dto.IbanValidationResponse;
@@ -105,60 +107,8 @@ public class IbanService {
 
     private String extractBankIdentifier(String iban, String countryCode) {
         try {
-            switch (countryCode) {
-                case IbanConstants.COUNTRY_DE:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.DE_START,
-                        IbanConstants.BankCodePosition.DE_END
-                    );
-                case IbanConstants.COUNTRY_AT:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.AT_START,
-                        IbanConstants.BankCodePosition.AT_END
-                    );
-                case IbanConstants.COUNTRY_CH:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.CH_START,
-                        IbanConstants.BankCodePosition.CH_END
-                    );
-                case IbanConstants.COUNTRY_GB:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.GB_START,
-                        IbanConstants.BankCodePosition.GB_END
-                    );
-                case IbanConstants.COUNTRY_FR:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.FR_START,
-                        IbanConstants.BankCodePosition.FR_END
-                    );
-                case IbanConstants.COUNTRY_NL:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.NL_START,
-                        IbanConstants.BankCodePosition.NL_END
-                    );
-                case IbanConstants.COUNTRY_BE:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.BE_START,
-                        IbanConstants.BankCodePosition.BE_END
-                    );
-                case IbanConstants.COUNTRY_ES:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.ES_START,
-                        IbanConstants.BankCodePosition.ES_END
-                    );
-                case IbanConstants.COUNTRY_IT:
-                    return iban.substring(
-                        IbanConstants.BankCodePosition.IT_START,
-                        IbanConstants.BankCodePosition.IT_END
-                    );
-                default:
-                    return iban.length() > IbanConstants.BankCodePosition.DEFAULT_END
-                        ? iban.substring(
-                            IbanConstants.BankCodePosition.DEFAULT_START,
-                            IbanConstants.BankCodePosition.DEFAULT_END
-                        )
-                        : "";
-            }
+            CountryFormat format = IbanCountryConfig.getFormat(countryCode);
+            return iban.substring(format.bankCodeStart(), format.bankCodeEnd());
         } catch (StringIndexOutOfBoundsException e) {
             return "";
         }
@@ -166,30 +116,8 @@ public class IbanService {
 
     private String extractAccountNumber(String iban, String countryCode) {
         try {
-            switch (countryCode) {
-                case IbanConstants.COUNTRY_DE:
-                    return iban.substring(IbanConstants.AccountNumberPosition.DE_START);
-                case IbanConstants.COUNTRY_AT:
-                    return iban.substring(IbanConstants.AccountNumberPosition.AT_START);
-                case IbanConstants.COUNTRY_CH:
-                    return iban.substring(IbanConstants.AccountNumberPosition.CH_START);
-                case IbanConstants.COUNTRY_GB:
-                    return iban.substring(IbanConstants.AccountNumberPosition.GB_START);
-                case IbanConstants.COUNTRY_FR:
-                    return iban.substring(IbanConstants.AccountNumberPosition.FR_START);
-                case IbanConstants.COUNTRY_NL:
-                    return iban.substring(IbanConstants.AccountNumberPosition.NL_START);
-                case IbanConstants.COUNTRY_BE:
-                    return iban.substring(IbanConstants.AccountNumberPosition.BE_START);
-                case IbanConstants.COUNTRY_ES:
-                    return iban.substring(IbanConstants.AccountNumberPosition.ES_START);
-                case IbanConstants.COUNTRY_IT:
-                    return iban.substring(IbanConstants.AccountNumberPosition.IT_START);
-                default:
-                    return iban.length() > IbanConstants.AccountNumberPosition.DEFAULT_START
-                        ? iban.substring(IbanConstants.AccountNumberPosition.DEFAULT_START)
-                        : "";
-            }
+            CountryFormat format = IbanCountryConfig.getFormat(countryCode);
+            return iban.substring(format.accountNumberStart());
         } catch (StringIndexOutOfBoundsException e) {
             return "";
         }

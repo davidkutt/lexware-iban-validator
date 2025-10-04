@@ -98,7 +98,7 @@ const BankManager: React.FC = () => {
               }
             }}
             icon={<Icon name={showForm ? 'close' : 'plus'} size={16} />}
-            className="!bg-success-600 !bg-opacity-20 hover:!bg-opacity-30 !text-white"
+            className="!bg-success-500 !bg-opacity-20 hover:!bg-opacity-30 !text-white"
           >
             {showForm ? 'Abbrechen' : 'Bank hinzufügen'}
           </Button>
