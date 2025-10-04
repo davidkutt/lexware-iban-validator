@@ -1,8 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
-import { ibanApi, bankApi } from '../api';
 
-vi.mock('axios');
+const { mockGet, mockPost, mockPut, mockDelete } = vi.hoisted(() => {
+  return {
+    mockGet: vi.fn(),
+    mockPost: vi.fn(),
+    mockPut: vi.fn(),
+    mockDelete: vi.fn(),
+  };
+});
+
+vi.mock('axios', () => {
+  return {
+    default: {
+      create: () => ({
+        get: mockGet,
+        post: mockPost,
+        put: mockPut,
+        delete: mockDelete,
+      }),
+    },
+  };
+});
+
+import { ibanApi, bankApi } from '../api';
 
 describe('API Service', () => {
   beforeEach(() => {
@@ -22,10 +42,7 @@ describe('API Service', () => {
         },
       };
 
-      const mockPost = vi.fn().mockResolvedValue(mockResponse);
-      vi.mocked(axios.create).mockReturnValue({
-        post: mockPost,
-      } as any);
+      mockPost.mockResolvedValue(mockResponse);
 
       const result = await ibanApi.validateIban({ iban: 'DE89370400440532013000' });
 
@@ -41,10 +58,7 @@ describe('API Service', () => {
         { id: 2, name: 'Commerzbank', bic: 'COBADEFFXXX', bankCode: '10040000', countryCode: 'DE' },
       ];
 
-      const mockGet = vi.fn().mockResolvedValue({ data: mockBanks });
-      vi.mocked(axios.create).mockReturnValue({
-        get: mockGet,
-      } as any);
+      mockGet.mockResolvedValue({ data: mockBanks });
 
       const result = await bankApi.getAllBanks();
 
@@ -61,10 +75,7 @@ describe('API Service', () => {
         countryCode: 'DE',
       };
 
-      const mockGet = vi.fn().mockResolvedValue({ data: mockBank });
-      vi.mocked(axios.create).mockReturnValue({
-        get: mockGet,
-      } as any);
+      mockGet.mockResolvedValue({ data: mockBank });
 
       const result = await bankApi.getBankById(1);
 
@@ -80,10 +91,7 @@ describe('API Service', () => {
         countryCode: 'DE',
       };
 
-      const mockPost = vi.fn().mockResolvedValue({ data: { id: 3, ...newBank } });
-      vi.mocked(axios.create).mockReturnValue({
-        post: mockPost,
-      } as any);
+      mockPost.mockResolvedValue({ data: { id: 3, ...newBank } });
 
       const result = await bankApi.createBank(newBank);
 
@@ -99,10 +107,7 @@ describe('API Service', () => {
         countryCode: 'DE',
       };
 
-      const mockPut = vi.fn().mockResolvedValue({ data: { id: 1, ...updatedBank } });
-      vi.mocked(axios.create).mockReturnValue({
-        put: mockPut,
-      } as any);
+      mockPut.mockResolvedValue({ data: { id: 1, ...updatedBank } });
 
       const result = await bankApi.updateBank(1, updatedBank);
 
@@ -111,10 +116,7 @@ describe('API Service', () => {
     });
 
     it('sollte Bank löschen', async () => {
-      const mockDelete = vi.fn().mockResolvedValue({});
-      vi.mocked(axios.create).mockReturnValue({
-        delete: mockDelete,
-      } as any);
+      mockDelete.mockResolvedValue({});
 
       await bankApi.deleteBank(1);
 

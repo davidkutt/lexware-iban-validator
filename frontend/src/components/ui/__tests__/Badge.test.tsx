@@ -33,10 +33,10 @@ describe('Badge Component', () => {
     expect(screen.getByText('Klein')).toHaveClass('px-2', 'py-0.5', 'text-xs');
 
     rerender(<Badge size="md">Mittel</Badge>);
-    expect(screen.getByText('Mittel')).toHaveClass('px-2.5', 'py-0.5', 'text-sm');
+    expect(screen.getByText('Mittel')).toHaveClass('px-3', 'py-1', 'text-sm');
 
     rerender(<Badge size="lg">Groß</Badge>);
-    expect(screen.getByText('Groß')).toHaveClass('px-3', 'py-1', 'text-base');
+    expect(screen.getByText('Groß')).toHaveClass('px-4', 'py-1.5', 'text-base');
   });
 
   it('sollte rounded Variante unterstützen', () => {

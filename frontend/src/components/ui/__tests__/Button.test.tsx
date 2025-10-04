@@ -52,7 +52,8 @@ describe('Button Component', () => {
     const button = screen.getByRole('button');
 
     expect(button).toBeDisabled();
-    expect(button.querySelector('svg.animate-spin')).toBeInTheDocument();
+    const spinner = button.querySelector('svg.animate-spin');
+    expect(spinner).toBeTruthy();
   });
 
   it('sollte Icon anzeigen', () => {

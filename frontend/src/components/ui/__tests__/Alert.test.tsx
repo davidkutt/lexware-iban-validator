@@ -11,19 +11,19 @@ describe('Alert Component', () => {
   it('sollte verschiedene Varianten unterstützen', () => {
     const { rerender } = render(<Alert variant="success">Erfolg</Alert>);
     let alert = screen.getByRole('alert');
-    expect(alert).toHaveClass('bg-green-50', 'border-green-300');
+    expect(alert).toHaveClass('bg-green-50', 'border-green-500');
 
     rerender(<Alert variant="error">Fehler</Alert>);
     alert = screen.getByRole('alert');
-    expect(alert).toHaveClass('bg-red-50', 'border-red-300');
+    expect(alert).toHaveClass('bg-red-50', 'border-red-500');
 
     rerender(<Alert variant="warning">Warnung</Alert>);
     alert = screen.getByRole('alert');
-    expect(alert).toHaveClass('bg-yellow-50', 'border-yellow-300');
+    expect(alert).toHaveClass('bg-yellow-50', 'border-yellow-500');
 
     rerender(<Alert variant="info">Info</Alert>);
     alert = screen.getByRole('alert');
-    expect(alert).toHaveClass('bg-blue-50', 'border-blue-300');
+    expect(alert).toHaveClass('bg-blue-50', 'border-blue-500');
   });
 
   it('sollte Titel anzeigen', () => {

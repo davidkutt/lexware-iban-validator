@@ -1,10 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import IbanValidator from '../IbanValidator';
-import * as api from '../../services/api';
+import { IbanRepository } from '../../repositories/IbanRepository';
 
-vi.mock('../../services/api');
+vi.mock('../../repositories/IbanRepository', () => ({
+  IbanRepository: {
+    validateIban: vi.fn(),
+  },
+}));
 
 describe('IbanValidator Component', () => {
   beforeEach(() => {
@@ -24,7 +28,10 @@ describe('IbanValidator Component', () => {
     render(<IbanValidator />);
 
     const input = screen.getByLabelText('IBAN-Nummer');
-    await user.type(input, 'DE89370400440532013000');
+
+    await act(async () => {
+      await user.type(input, 'DE89370400440532013000');
+    });
 
     expect(input).toHaveValue('DE89 3704 0044 0532 0130 00');
   });
@@ -39,7 +46,7 @@ describe('IbanValidator Component', () => {
       accountNumber: '0532013000',
     };
 
-    vi.mocked(api.ibanApi.validateIban).mockResolvedValue(mockResponse);
+    vi.mocked(IbanRepository.validateIban).mockResolvedValue(mockResponse);
 
     const user = userEvent.setup();
     render(<IbanValidator />);
@@ -63,7 +70,7 @@ describe('IbanValidator Component', () => {
       errorMessage: 'Ungültige Prüfziffer',
     };
 
-    vi.mocked(api.ibanApi.validateIban).mockResolvedValue(mockResponse);
+    vi.mocked(IbanRepository.validateIban).mockResolvedValue(mockResponse);
 
     const user = userEvent.setup();
     render(<IbanValidator />);
@@ -81,7 +88,7 @@ describe('IbanValidator Component', () => {
   });
 
   it('sollte API-Fehler behandeln', async () => {
-    vi.mocked(api.ibanApi.validateIban).mockRejectedValue({
+    vi.mocked(IbanRepository.validateIban).mockRejectedValue({
       response: { data: { message: 'Server Fehler' } },
     });
 
@@ -119,7 +126,10 @@ describe('IbanValidator Component', () => {
     render(<IbanValidator />);
 
     const exampleButton = screen.getByText('DE89 3704 0044 0532 0130 00');
-    await user.click(exampleButton);
+
+    await act(async () => {
+      await user.click(exampleButton);
+    });
 
     const input = screen.getByLabelText('IBAN-Nummer');
     expect(input).toHaveValue('DE89 3704 0044 0532 0130 00');
@@ -135,7 +145,7 @@ describe('IbanValidator Component', () => {
       accountNumber: '0532013000',
     };
 
-    vi.mocked(api.ibanApi.validateIban).mockResolvedValue(mockResponse);
+    vi.mocked(IbanRepository.validateIban).mockResolvedValue(mockResponse);
 
     render(<IbanValidator />);
 

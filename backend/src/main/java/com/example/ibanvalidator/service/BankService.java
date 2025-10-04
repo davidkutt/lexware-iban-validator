@@ -6,6 +6,8 @@ import com.example.ibanvalidator.exception.BankNotFoundException;
 import com.example.ibanvalidator.exception.DuplicateBicException;
 import com.example.ibanvalidator.model.Bank;
 import com.example.ibanvalidator.repository.BankRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,13 @@ import java.util.stream.Collectors;
 @Transactional
 public class BankService {
 
+    private static final Logger log = LoggerFactory.getLogger(BankService.class);
+
     private final BankRepository bankRepository;
 
     public BankService(BankRepository bankRepository) {
         this.bankRepository = bankRepository;
+        log.info("BankService initialisiert");
     }
 
     private List<BankResponse> mapToBankResponses(List<Bank> banks) {
@@ -53,7 +58,10 @@ public class BankService {
     }
 
     public BankResponse createBank(BankRequest request) {
+        log.debug("Erstelle Bank: Name={}, BIC={}", request.getName(), request.getBic());
+
         if (bankRepository.findByBic(request.getBic()).isPresent()) {
+            log.warn("Bank-Erstellung fehlgeschlagen: BIC {} existiert bereits", request.getBic());
             throw new DuplicateBicException(request.getBic());
         }
 
@@ -65,6 +73,7 @@ public class BankService {
         );
 
         Bank savedBank = bankRepository.save(bank);
+        log.info("Bank erstellt: ID={}, Name={}", savedBank.getId(), savedBank.getName());
         return BankResponse.fromEntity(savedBank);
     }
 
@@ -87,10 +96,15 @@ public class BankService {
     }
 
     public void deleteBank(Long id) {
+        log.debug("Lösche Bank: ID={}", id);
+
         if (!bankRepository.existsById(id)) {
+            log.warn("Bank-Löschung fehlgeschlagen: Bank mit ID {} nicht gefunden", id);
             throw new BankNotFoundException(id);
         }
+
         bankRepository.deleteById(id);
+        log.info("Bank gelöscht: ID={}", id);
     }
 
     @Transactional(readOnly = true)

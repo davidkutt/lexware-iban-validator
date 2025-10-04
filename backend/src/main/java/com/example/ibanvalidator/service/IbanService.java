@@ -8,6 +8,8 @@ import com.example.ibanvalidator.dto.IbanValidationResponse;
 import com.example.ibanvalidator.model.Bank;
 import com.example.ibanvalidator.repository.BankRepository;
 import org.apache.commons.validator.routines.IBANValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,20 +17,27 @@ import java.util.Optional;
 @Service
 public class IbanService {
 
+    private static final Logger log = LoggerFactory.getLogger(IbanService.class);
+
     private final BankRepository bankRepository;
     private final IBANValidator ibanValidator;
 
     public IbanService(BankRepository bankRepository) {
         this.bankRepository = bankRepository;
         this.ibanValidator = IBANValidator.getInstance();
+        log.info("IbanService initialisiert");
     }
 
     public IbanValidationResponse validateIban(IbanValidationRequest request) {
+        log.debug("Validiere IBAN: {}", request.getIban());
+
         if (request.getIban() == null || request.getIban().isBlank()) {
+            log.warn("IBAN-Validierung fehlgeschlagen: IBAN ist leer");
             return new IbanValidationResponse(false, "IBAN ist erforderlich");
         }
 
         String iban = normalizeIban(request.getIban());
+        log.debug("Normalisierte IBAN: {}", iban);
 
         if (iban.length() < IbanConstants.MIN_IBAN_LENGTH) {
             return new IbanValidationResponse(false,

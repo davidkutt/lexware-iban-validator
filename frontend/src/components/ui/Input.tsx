@@ -34,10 +34,12 @@ const Input: React.FC<InputProps> = ({
     ${className}
   `.trim();
 
+  const inputId = props.id || `input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
+
   return (
     <div className={widthClass}>
       {label && (
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label htmlFor={inputId} className="block text-sm font-semibold text-gray-700 mb-2">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -50,7 +52,7 @@ const Input: React.FC<InputProps> = ({
           </div>
         )}
 
-        <input className={inputClasses} {...props} />
+        <input id={inputId} className={inputClasses} {...props} />
 
         {icon && iconPosition === 'right' && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">

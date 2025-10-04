@@ -3,6 +3,8 @@ package com.example.ibanvalidator.exception;
 import com.example.ibanvalidator.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,15 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(BankNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleBankNotFoundException(
             BankNotFoundException ex,
             HttpServletRequest request) {
+
+        log.warn("Bank nicht gefunden: {} - URI: {}", ex.getMessage(), request.getRequestURI());
 
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -39,6 +45,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDuplicateBicException(
             DuplicateBicException ex,
             HttpServletRequest request) {
+
+        log.warn("Duplikat-BIC-Fehler: {} - URI: {}", ex.getMessage(), request.getRequestURI());
 
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
@@ -135,14 +143,14 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
 
+        log.error("Unerwarteter Fehler: {} - URI: {}", ex.getMessage(), request.getRequestURI(), ex);
+
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Interner Serverfehler",
                 "Ein unerwarteter Fehler ist aufgetreten",
                 request.getRequestURI()
         );
-
-        ex.printStackTrace();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }

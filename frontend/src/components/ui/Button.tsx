@@ -18,7 +18,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   success: 'bg-success-600 hover:bg-success-700 text-white shadow-md hover:shadow-lg focus:ring-success-500',
   danger: 'bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg focus:ring-red-500',
   outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white focus:ring-primary-500',
-  ghost: 'bg-primary-600 hover:bg-primary-700 text-white shadow-md hover:shadow-lg focus:ring-primary-500',
+  ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

@@ -71,7 +71,7 @@ const Alert: React.FC<AlertProps> = ({
   const config = variantConfig[variant];
 
   return (
-    <div className={`${config.bg} border-l-4 ${config.border} p-4 rounded-r-lg animate-fade-in ${className}`}>
+    <div role="alert" className={`${config.bg} border-l-4 ${config.border} p-4 rounded-r-lg animate-fade-in ${className}`}>
       <div className="flex items-start">
         <div className={`${config.iconColor} mt-0.5 mr-3 flex-shrink-0`}>
           {config.icon}
