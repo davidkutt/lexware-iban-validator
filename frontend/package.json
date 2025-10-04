@@ -17,6 +17,7 @@
     "@tailwindcss/forms": "^0.4.0-alpha.2",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.1.13",
+    "@tanstack/react-virtual": "^3.13.12",
     "axios": "^1.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
