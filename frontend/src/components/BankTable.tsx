@@ -8,14 +8,15 @@ interface BankTableProps {
     onDelete: (id: number, bankName: string) => void;
 }
 
-const TableHeader: React.FC<{ icon: any; children: React.ReactNode }> = ({ icon, children }) => (
+const TableHeader = React.memo<{ icon: any; children: React.ReactNode }>(({ icon, children }) => (
     <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
         <div className="flex items-center space-x-2">
             <Icon name={icon} size={16} />
             <span>{children}</span>
         </div>
     </th>
-);
+));
+TableHeader.displayName = 'TableHeader';
 
 const BankTable: React.FC<BankTableProps> = ({ banks, onEdit, onDelete }) => {
     return (

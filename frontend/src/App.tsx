@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import IbanValidator from './components/IbanValidator';
 import BankManager from './components/BankManager';
 import AppHeader from './components/AppHeader';
@@ -11,15 +11,15 @@ const App: React.FC = () => {
         throw new Error('Test Error: ErrorBoundary funktioniert!');
     }
 
-    const handleLogoClick = () => {
+    const handleLogoClick = useCallback(() => {
         setActiveTab('validator');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }, []);
 
-    const handleTabChange = (tab: 'validator' | 'banks') => {
+    const handleTabChange = useCallback((tab: 'validator' | 'banks') => {
         setActiveTab(tab);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

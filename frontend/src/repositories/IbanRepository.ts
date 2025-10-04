@@ -1,6 +1,6 @@
 import { BaseRepository } from './BaseRepository';
 import { ibanApi, IbanValidationRequest, IbanValidationResponse } from '../services/api';
-import { CACHE_TTL, RETRY, RETRYABLE_STATUSES, CACHE_KEYS } from './constants';
+import { CACHE_TTL, RETRY, CACHE_KEYS } from './constants';
 
 class IbanRepositoryClass extends BaseRepository {
     constructor() {

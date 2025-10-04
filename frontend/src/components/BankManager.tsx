@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Bank } from '../services/api';
 import { Card, CardHeader, CardBody, Button, Alert, Icon } from './ui';
 import BankForm from './BankForm';
@@ -47,22 +47,22 @@ const BankManager: React.FC = () => {
     }
   };
 
-  const handleEdit = (bank: Bank) => {
+  const handleEdit = useCallback((bank: Bank) => {
     startEditing(bank);
     setShowForm(true);
-  };
+  }, [startEditing]);
 
-  const handleDelete = async (id: number, bankName: string) => {
+  const handleDelete = useCallback(async (id: number, bankName: string) => {
     try {
       await deleteBank(id, bankName);
     } catch (err) {
     }
-  };
+  }, [deleteBank]);
 
-  const cancelEdit = () => {
+  const cancelEdit = useCallback(() => {
     resetForm();
     setShowForm(false);
-  };
+  }, [resetForm]);
 
   if (loading) {
     return (

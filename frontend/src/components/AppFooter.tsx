@@ -7,22 +7,23 @@ interface TechBadgeProps {
     link: string;
 }
 
-const TechBadge: React.FC<TechBadgeProps> = ({ name, color, link }) => {
-    const colors: Record<string, string> = {
-        green: 'bg-green-900 text-green-300',
-        blue: 'bg-blue-900 text-blue-300',
-        cyan: 'bg-cyan-900 text-cyan-300',
-        indigo: 'bg-indigo-900 text-indigo-300'
-    };
+const TECH_BADGE_COLORS: Record<string, string> = {
+    green: 'bg-green-900 text-green-300',
+    blue: 'bg-blue-900 text-blue-300',
+    cyan: 'bg-cyan-900 text-cyan-300',
+    indigo: 'bg-indigo-900 text-indigo-300'
+} as const;
 
+const TechBadge = React.memo<TechBadgeProps>(({ name, color, link }) => {
     return (
         <a href={link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-            <span className={`px-2 py-1 rounded text-xs font-medium ${colors[color]}`}>
+            <span className={`px-2 py-1 rounded text-xs font-medium ${TECH_BADGE_COLORS[color]}`}>
                 {name}
             </span>
         </a>
     );
-};
+});
+TechBadge.displayName = 'TechBadge';
 
 const AppFooter: React.FC = () => {
     return (

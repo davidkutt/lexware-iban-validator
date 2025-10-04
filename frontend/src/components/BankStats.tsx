@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Bank } from '../services/api';
 
 interface BankStatsProps {
@@ -11,25 +11,32 @@ interface StatCardProps {
     color: 'gray' | 'blue' | 'green';
 }
 
-const StatCard: React.FC<StatCardProps> = ({ value, label, color }) => {
-    const colors = {
-        gray: 'text-gray-900',
-        blue: 'text-blue-600',
-        green: 'text-green-600'
-    };
+const STAT_COLORS = {
+    gray: 'text-gray-900',
+    blue: 'text-blue-600',
+    green: 'text-green-600'
+} as const;
 
+const StatCard = React.memo<StatCardProps>(({ value, label, color }) => {
     return (
         <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className={`text-2xl font-bold ${colors[color]}`}>{value}</div>
+            <div className={`text-2xl font-bold ${STAT_COLORS[color]}`}>{value}</div>
             <div className="text-sm text-gray-500">{label}</div>
         </div>
     );
-};
+});
+StatCard.displayName = 'StatCard';
 
 const BankStats: React.FC<BankStatsProps> = ({ banks }) => {
-    const totalBanks = banks.length;
-    const uniqueCountries = new Set(banks.map(b => b.countryCode)).size;
-    const germanBanks = banks.filter(b => b.countryCode === 'DE').length;
+    const totalBanks = useMemo(() => banks.length, [banks]);
+    const uniqueCountries = useMemo(
+        () => new Set(banks.map(b => b.countryCode)).size,
+        [banks]
+    );
+    const germanBanks = useMemo(
+        () => banks.filter(b => b.countryCode === 'DE').length,
+        [banks]
+    );
 
     return (
         <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200">
